@@ -9,8 +9,11 @@ class DbInteractionManager:
         else:
             self.model = model
 
-    def add_tag(self, tag_name):
-        session = self.model.get_new_session()
+    def add_tag(self, tag_name, old_session=None):
+        if old_session is None:
+            session = self.model.get_new_session()
+        else:
+            session = old_session
         try:
             tag = session.query(Tag).filter(Tag.name == tag_name).first()
             if tag:
@@ -25,7 +28,8 @@ class DbInteractionManager:
                 # Return the ID of the newly created tag
                 return new_tag.id
         finally:
-            session.close()
+            if old_session is None:
+                session.close()
 
     def filter_by_tags(self, items_with_tags, tags_required=None, tags_blacklisted=None):
         final_items = []
@@ -37,9 +41,10 @@ class DbInteractionManager:
 
     def _is_under_filter(self, tags, tags_required, tags_blacklisted):
         for tag in tags:
-            if tag not in tags_required:
-                return False
             if tag in tags_blacklisted:
+                return False
+        for tag in tags_required:
+            if tag not in tags:
                 return False
         return True
 
@@ -111,7 +116,7 @@ class DbInteractionManager:
             session.add(new_item)
             session.flush()
             for tag, tag_weight in tags.items():
-                new_tag_id = self.add_tag(tag)
+                new_tag_id = self.add_tag(tag, session)
                 new_link = ItemTag(item_id=new_item.id, weight=tag_weight, tag_id=new_tag_id)
                 session.add(new_link)
                 if new_link is None:

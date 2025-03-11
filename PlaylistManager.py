@@ -1,6 +1,7 @@
 from DbManagement import DbInteractionManager
 from random import randint
 
+
 class Playlist:
     def __init__(self, playlist=None, loop=False):
         if playlist is None:
@@ -109,6 +110,8 @@ class PlaylistManager:
             prototype = []
             for raw_item in raw:
                 prototype_item = raw_item['item']
+                print(raw_item)
+                print("!!!")
                 weight = 0
                 for tag, tag_weight in self.weights:
                     if tag in raw_item['tags'].keys():
@@ -130,7 +133,6 @@ class PlaylistManager:
         if domain == 0:
             return Playlist()
         else:
-            print(self.desired_length)
             for i in range(self.desired_length):
                 next_key = randint(0, domain-1)
                 playlist.append(self.prototype[next_key])
