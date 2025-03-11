@@ -108,12 +108,18 @@ class DbInteractionManager:
         session = self.model.get_new_session()
         try:
             new_item = Item(name=item.name)
+            session.add(new_item)
+            session.flush()
             for tag, tag_weight in tags.items():
                 new_tag_id = self.add_tag(tag)
                 new_link = ItemTag(item_id=new_item.id, weight=tag_weight, tag_id=new_tag_id)
+                session.add(new_link)
                 if new_link is None:
                     raise IOError("Db write error")
             session.commit()
+        except Exception:
+            session.rollback()
+            raise
         finally:
             session.close()
 

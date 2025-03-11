@@ -55,7 +55,7 @@ class Playlist:
 
 
 class PlaylistManager:
-    def __init__(self, desired_length=100, db_manager=None):
+    def __init__(self, db_manager=None, desired_length=100):
         if db_manager is None:
             self.db_manager = DbInteractionManager()
         else:
@@ -130,7 +130,8 @@ class PlaylistManager:
         if domain == 0:
             return Playlist()
         else:
+            print(self.desired_length)
             for i in range(self.desired_length):
-                next_key = randint(0, domain)
+                next_key = randint(0, domain-1)
                 playlist.append(self.prototype[next_key])
         return Playlist(playlist=playlist)

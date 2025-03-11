@@ -10,7 +10,8 @@ class Item(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
 
-    tags = relationship('Tag', secondary='item_tags', back_populates='items')
+    tags = relationship('Tag', secondary='item_tags', back_populates='items', overlaps="item_tags")
+    item_tags = relationship('ItemTag', back_populates='item', overlaps="tags")
 
 
 class Tag(Base):
@@ -18,7 +19,8 @@ class Tag(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
 
-    items = relationship('Item', secondary='item_tags', back_populates='tags')
+    items = relationship('Item', secondary='item_tags', back_populates='tags', overlaps="item_tags")
+    tag_items = relationship('ItemTag', back_populates='tag', overlaps="items")
 
 
 class ItemTag(Base):
@@ -26,6 +28,9 @@ class ItemTag(Base):
     item_id = Column(Integer, ForeignKey('items.id'), primary_key=True)
     tag_id = Column(Integer, ForeignKey('tags.id'), primary_key=True)
     weight = Column(Integer)
+
+    item = relationship("Item", back_populates="item_tags", overlaps="tags")
+    tag = relationship("Tag", back_populates="tag_items", overlaps="items")
 
 
 class ModelsMain:

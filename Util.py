@@ -7,6 +7,7 @@ class PseudoItem:
         else:
             self.tags = tags
 
+
 class PseudoTag:
     def __init__(self, name="DEFAULT", uid=0):
         self.name = name

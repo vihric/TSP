@@ -1,8 +1,13 @@
 from PlaylistManager import PlaylistManager, Playlist
 import DbManagement
+import os
 from Util import PseudoItem
 
 if __name__ == '__main__':
+    try:
+        os.remove('./main.db')
+    except OSError:
+        pass
     dbm = DbManagement.DbInteractionManager()
     playlist_manager = PlaylistManager(dbm)
     item1 = PseudoItem(name="test1")
