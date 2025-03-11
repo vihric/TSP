@@ -124,7 +124,7 @@ class PlaylistManager:
             raise ValueError(
                 "Prototype is not initialized:",
                 " try running get_playlist_prototype()",
-                " before this method!"
+                " before this method!",
             )
         playlist = []
         try:

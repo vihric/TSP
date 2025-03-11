@@ -28,7 +28,7 @@ class DbInteractionManager:
                 session.close()
 
     def filter_by_tags(
-            self, items_with_tags, tags_required=None, tags_blacklisted=None
+        self, items_with_tags, tags_required=None, tags_blacklisted=None
     ):
         final_items = []
         for item in items_with_tags:
@@ -47,11 +47,11 @@ class DbInteractionManager:
         return True
 
     def get_items(
-            self,
-            filters_basic=None,
-            filters_tags_required=None,
-            filters_tags_blacklist=None,
-            table=Item,
+        self,
+        filters_basic=None,
+        filters_tags_required=None,
+        filters_tags_blacklist=None,
+        table=Item,
     ):
         session = self.model.get_new_session()
         try:
@@ -73,13 +73,13 @@ class DbInteractionManager:
                 return self.filter_by_tags(
                     items_with_tags,
                     filters_tags_required,
-                    filters_tags_blacklist
+                    filters_tags_blacklist,
                 )
             elif filter is dict:
                 if table is None:
                     ValueError(
                         "if filters are not empty, ",
-                        "table must not be empty either"
+                        "table must not be empty either",
                     )
                 items_with_tags = self._get_items_with_filters(
                     self, filters_basic, session, table
@@ -164,9 +164,7 @@ class DbInteractionManager:
         session = self.model.get_new_session()
         try:
             item_to_delete = (
-                session.query(Item)
-                .filter(Item.id == item_id)
-                .first()
+                session.query(Item).filter(Item.id == item_id).first()
             )
             if item_to_delete:
                 session.delete(item_to_delete)
