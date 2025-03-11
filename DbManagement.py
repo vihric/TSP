@@ -17,24 +17,22 @@ class DbInteractionManager:
         try:
             tag = session.query(Tag).filter(Tag.name == tag_name).first()
             if tag:
-                # Tag exists, return its ID
                 return tag.id
             else:
-                # Tag does not exist, create a new tag
                 new_tag = Tag(name=tag_name)
                 session.add(new_tag)
                 session.commit()
-
-                # Return the ID of the newly created tag
                 return new_tag.id
         finally:
             if old_session is None:
                 session.close()
 
-    def filter_by_tags(self, items_with_tags, tags_required=None, tags_blacklisted=None):
+    def filter_by_tags(
+            self, items_with_tags, tags_required=None, tags_blacklisted=None
+    ):
         final_items = []
         for item in items_with_tags:
-            tags = item['tags']
+            tags = item["tags"]
             if self._is_under_filter(tags, tags_required, tags_blacklisted):
                 final_items.append(item)
         return final_items
@@ -48,7 +46,13 @@ class DbInteractionManager:
                 return False
         return True
 
-    def get_items(self, filters_basic=None, filters_tags_required=None, filters_tags_blacklist=None, table=Item):
+    def get_items(
+            self,
+            filters_basic=None,
+            filters_tags_required=None,
+            filters_tags_blacklist=None,
+            table=Item,
+    ):
         session = self.model.get_new_session()
         try:
             if filters_basic is None:
@@ -56,19 +60,36 @@ class DbInteractionManager:
                 items_with_tags = []
                 for item in items:
                     item_data = {
-                        'item': {
-                            'id': item.id,
-                            'name': item.name,
+                        "item": {
+                            "id": item.id,
+                            "name": item.name,
                         },
-                        'tags': {tag.name: link.weight for tag, link in zip(item.tags, item.item_tags)}
+                        "tags": {
+                            tag.name: link.weight
+                            for tag, link in zip(item.tags, item.item_tags)
+                        },
                     }
                     items_with_tags.append(item_data)
-                return self.filter_by_tags(items_with_tags, filters_tags_required, filters_tags_blacklist)
+                return self.filter_by_tags(
+                    items_with_tags,
+                    filters_tags_required,
+                    filters_tags_blacklist
+                )
             elif filter is dict:
                 if table is None:
-                    ValueError("if filters are not empty, table must not be empty either")
-                items_with_tags = self._get_items_with_filters(self, filters_basic, session, table)
-                return self.filter_by_tags(items_with_tags, filters_tags_required, filters_tags_blacklist, table)
+                    ValueError(
+                        "if filters are not empty, ",
+                        "table must not be empty either"
+                    )
+                items_with_tags = self._get_items_with_filters(
+                    self, filters_basic, session, table
+                )
+                return self.filter_by_tags(
+                    items_with_tags,
+                    filters_tags_required,
+                    filters_tags_blacklist,
+                    table,
+                )
             else:
                 raise ValueError("invalid filter structure")
         finally:
@@ -82,11 +103,14 @@ class DbInteractionManager:
         items_with_tags = []
         for item in items:
             item_data = {
-                'item': {
-                    'id': item.id,
-                    'name': item.name,
+                "item": {
+                    "id": item.id,
+                    "name": item.name,
                 },
-                'tags': {tag.name: link.weight for tag, link in zip(item.tags, item.item_tags)}
+                "tags": {
+                    tag.name: link.weight
+                    for tag, link in zip(item.tags, item.item_tags)
+                },
             }
             items_with_tags.append(item_data)
         return items_with_tags
@@ -117,7 +141,9 @@ class DbInteractionManager:
             session.flush()
             for tag, tag_weight in tags.items():
                 new_tag_id = self.add_tag(tag, session)
-                new_link = ItemTag(item_id=new_item.id, weight=tag_weight, tag_id=new_tag_id)
+                new_link = ItemTag(
+                    item_id=new_item.id, weight=tag_weight, tag_id=new_tag_id
+                )
                 session.add(new_link)
                 if new_link is None:
                     raise IOError("Db write error")
@@ -137,9 +163,12 @@ class DbInteractionManager:
     def delete_item(self, item_id):
         session = self.model.get_new_session()
         try:
-            item_to_delete = session.query(Item).filter(Item.id == item_id).first()
+            item_to_delete = (
+                session.query(Item)
+                .filter(Item.id == item_id)
+                .first()
+            )
             if item_to_delete:
-                # Delete the item if it exists
                 session.delete(item_to_delete)
                 session.commit()
         finally:
