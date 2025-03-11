@@ -1,11 +1,11 @@
-from PlaylistManager import PlaylistManager, Playlist
+from PlaylistManager import PlaylistManager
 import DbManagement
 import os
 from Util import PseudoItem
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
-        os.remove('./main.db')
+        os.remove("./main.db")
     except OSError:
         pass
     dbm = DbManagement.DbInteractionManager()
@@ -23,7 +23,7 @@ if __name__ == '__main__':
     playlist_manager.add_required_tag("tag2")
 
     playlist_manager.desired_length = 10
-    print("desired length of playlist: " + str(playlist_manager.desired_length))
+    print("desired length of playlist: ", str(playlist_manager.desired_length))
 
     playlist_manager.get_playlist_prototype()
     playlist = playlist_manager.get_playlist()

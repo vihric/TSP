@@ -74,12 +74,6 @@ class PlaylistManager:
     def add_weight(self, tag, weight):
         self.weights[tag] = weight
 
-    def add_weights(self, tags, weights):
-        if len(tags) != len(weights):
-            raise ValueError("length of tags and weights must be equal!")
-        for i in range(len(tags)):
-            self.add_weight(tags[i], weights[i])
-
     def add_weights(self, weights):
         for tag, weight in weights:
             self.weights[tag] = weight
@@ -102,20 +96,23 @@ class PlaylistManager:
         self.desired_length = new_length
 
     def get_playlist_prototype(self):
-        raw = self.db_manager.get_items(filters_tags_required=self.required_tags, filters_tags_blacklist=self.blacklist)
+        raw = self.db_manager.get_items(
+            filters_tags_required=self.required_tags,
+            filters_tags_blacklist=self.blacklist,
+        )
         if len(self.weights.keys()) == 0:
             self.prototype = raw
             return self.prototype
         else:
             prototype = []
             for raw_item in raw:
-                prototype_item = raw_item['item']
+                prototype_item = raw_item["item"]
                 print(raw_item)
                 print("!!!")
                 weight = 0
                 for tag, tag_weight in self.weights:
-                    if tag in raw_item['tags'].keys():
-                        weight += tag_weight * raw_item['tags'][tag]
+                    if tag in raw_item["tags"].keys():
+                        weight += tag_weight * raw_item["tags"][tag]
                 if weight > 0:
                     for i in range(weight):
                         prototype.append(prototype_item)
@@ -124,16 +121,22 @@ class PlaylistManager:
 
     def get_playlist(self):
         if self.prototype is None:
-            raise ValueError("Prototype is not initialized: try running get_playlist_prototype() before this method!")
+            raise ValueError(
+                "Prototype is not initialized:",
+                " try running get_playlist_prototype()",
+                " before this method!",
+            )
         playlist = []
         try:
             domain = len(self.prototype)
         except Exception:
-            raise ValueError("Unable to get prototype length: Manager is in invalid state!")
+            raise ValueError(
+                "Unable to get prototype length: Manager is in invalid state!"
+            )
         if domain == 0:
             return Playlist()
         else:
             for i in range(self.desired_length):
-                next_key = randint(0, domain-1)
+                next_key = randint(0, domain - 1)
                 playlist.append(self.prototype[next_key])
         return Playlist(playlist=playlist)
