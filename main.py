@@ -22,9 +22,13 @@ if __name__ == '__main__':
     playlist_manager.add_blacklisted_tag("tag4")
     playlist_manager.add_required_tag("tag2")
 
+    playlist_manager.desired_length = 10
+
     playlist_manager.get_playlist_prototype()
     playlist = playlist_manager.get_playlist()
-    print(len(playlist))
-    print(playlist_manager.prototype)
+    print("length of playlist: " + str(len(playlist)))
+    print("desired length of playlist: " + str(playlist_manager.prototype))
+    print("playlist:")
     for item in playlist:
         print(item)
+        print(len(item['tags']))

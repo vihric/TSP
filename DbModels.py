@@ -10,8 +10,8 @@ class Item(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
 
-    tags = relationship('Tag', secondary='item_tags', back_populates='items', overlaps="item_tags")
-    item_tags = relationship('ItemTag', back_populates='item', overlaps="tags")
+    item_tags = relationship('ItemTag', back_populates='item', cascade="all, delete-orphan")
+    tags = relationship('Tag', secondary='item_tags', viewonly=True, overlaps="item_tags")
 
 
 class Tag(Base):
@@ -19,8 +19,8 @@ class Tag(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
 
-    items = relationship('Item', secondary='item_tags', back_populates='tags', overlaps="item_tags")
-    tag_items = relationship('ItemTag', back_populates='tag', overlaps="items")
+    tag_items = relationship('ItemTag', back_populates='tag', cascade="all, delete-orphan")
+    items = relationship('Item', secondary='item_tags', viewonly=True, overlaps="tag_items")
 
 
 class ItemTag(Base):
